@@ -18,6 +18,9 @@ export const SEARCH_ENGINE_ORDER = [
   'https://www.instagram.com/search?q=%s',
   'https://www.reddit.com/search?q=%s',
   'https://www.quora.com/search?q=%s',
+  'https://github.com/search?q=%s',
+  'https://www.xiaohongshu.com/search_result?keyword=%s',
+  'https://x.com/search?q=%s'
 ];
 
 export const DEFAULT_SEARCH_ENGINES = {
@@ -92,5 +95,18 @@ export const DEFAULT_SEARCH_ENGINES = {
   'https://www.quora.com/search?q=%s': {
     name: 'Quora',
     enabled: true
-  } 
+  } ,
+  'https://www.xiaohongshu.com/search_result?keyword=%s': {
+    name: '小红书',
+    enabled: true
+  },
+  'https://x.com/search?q=%s': {
+    name: 'X',
+    enabled: true
+  }
 };
+
+export const SUPABASE_URL = 'YOUR_SUPABASE_URL'
+export const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'
+export const WECHAT_APP_ID = 'YOUR_WECHAT_APP_ID'
+export const WECHAT_REDIRECT_URI = 'YOUR_REDIRECT_URI'

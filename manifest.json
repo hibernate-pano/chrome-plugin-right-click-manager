@@ -7,7 +7,12 @@
     "storage",
     "contextMenus",
     "activeTab",
-    "scripting"
+    "scripting",
+    "identity"
+  ],
+  "host_permissions": [
+    "https://open.weixin.qq.com/*",
+    "https://*.supabase.co/*"
   ],
   "background": {
     "service_worker": "background.js",

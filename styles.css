@@ -277,3 +277,88 @@ button:focus-visible {
 .search-engine-item.custom {
   background-color: rgba(0, 0, 0, 0.02);
 }
+
+.hidden {
+    display: none;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+#qrcodeSection {
+    text-align: center;
+    padding: 20px;
+}
+
+#qrcode {
+    margin: 0 auto;
+    width: 200px;
+    height: 200px;
+}
+
+.login-tabs {
+    display: flex;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 8px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.login-panel {
+    padding: 16px 0;
+}
+
+.verification-group {
+    display: flex;
+    gap: 8px;
+}
+
+.verification-group input {
+    flex: 1;
+}
+
+.verification-group button {
+    white-space: nowrap;
+    min-width: 90px;
+}
+
+#emailLogin .input-group {
+    margin-bottom: 12px;
+}
+
+#emailLogin input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+#emailLoginBtn {
+    width: 100%;
+    margin-top: 16px;
+    background-color: var(--primary-color);
+    color: white;
+}

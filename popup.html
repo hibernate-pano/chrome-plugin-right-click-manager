@@ -9,6 +9,38 @@
 
 <body>
   <div class="container">
+    <div id="loginSection" class="hidden">
+      <div class="login-tabs">
+        <button class="tab-btn active" data-tab="wechat">微信登录</button>
+        <button class="tab-btn" data-tab="email">邮箱登录</button>
+      </div>
+
+      <div id="wechatLogin" class="login-panel">
+        <button id="loginBtn">微信登录</button>
+      </div>
+
+      <div id="emailLogin" class="login-panel hidden">
+        <div class="input-group">
+          <input type="email" id="emailInput" placeholder="请输入邮箱">
+        </div>
+        <div class="input-group verification-group">
+          <input type="text" id="codeInput" placeholder="验证码">
+          <button id="sendCodeBtn">发送验证码</button>
+        </div>
+        <button id="emailLoginBtn">登录</button>
+      </div>
+    </div>
+    <div id="userSection" class="hidden">
+      <div class="user-info">
+        <img id="userAvatar" src="" alt="avatar">
+        <span id="userName"></span>
+      </div>
+      <button id="logoutBtn">退出登录</button>
+    </div>
+    <div id="qrcodeSection" class="hidden">
+      <div id="qrcode"></div>
+      <p>请使用微信扫码登录</p>
+    </div>
     <h2>Right Click Searcher</h2>
 
     <div class="section">
@@ -35,6 +67,8 @@
       <button class="secondary" id="addSearchEngine">Add Custom Search Engine</button>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
   <script src="config.js" type="module"></script>
   <script src="popup.js" type="module"></script>
 </body>
