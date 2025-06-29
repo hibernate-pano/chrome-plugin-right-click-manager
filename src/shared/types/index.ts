@@ -3,7 +3,6 @@ export interface SearchEngine {
   name: string;
   url: string;
   icon: string;
-  isDefault: boolean;
   order?: number;
 }
 
@@ -55,6 +54,5 @@ export type SearchEngineStore = {
   addEngine: (engine: SearchEngine) => Promise<void>;
   updateEngine: (engine: SearchEngine) => Promise<void>;
   deleteEngine: (id: string) => Promise<void>;
-  setDefaultEngine: (id: string) => Promise<void>;
   reorderEngines: (engineIds: string[]) => Promise<void>;
 }; 

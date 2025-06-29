@@ -4,7 +4,7 @@ import { useSearchEngineStore } from '../hooks/useSearchEngineStore';
 import SearchEngineItem from './SearchEngineItem';
 
 const SearchEngineList: React.FC = () => {
-  const { engines, isLoading, error, fetchEngines, deleteEngine, setDefaultEngine, reorderEngines } = useSearchEngineStore();
+  const { engines, isLoading, error, fetchEngines, deleteEngine, reorderEngines } = useSearchEngineStore();
   const [enginesList, setEnginesList] = useState(engines);
 
   useEffect(() => {
@@ -23,10 +23,6 @@ const SearchEngineList: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     await deleteEngine(id);
-  };
-
-  const handleSetDefault = async (id: string) => {
-    await setDefaultEngine(id);
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -75,7 +71,6 @@ const SearchEngineList: React.FC = () => {
                     <SearchEngineItem
                       engine={engine}
                       onDelete={handleDelete}
-                      onSetDefault={handleSetDefault}
                     />
                   </div>
                 )}

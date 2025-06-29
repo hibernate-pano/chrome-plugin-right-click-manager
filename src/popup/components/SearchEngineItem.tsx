@@ -4,13 +4,11 @@ import { SearchEngine } from '../../shared/types';
 interface SearchEngineItemProps {
   engine: SearchEngine;
   onDelete: (id: string) => void;
-  onSetDefault: (id: string) => void;
 }
 
 const SearchEngineItem: React.FC<SearchEngineItemProps> = ({
   engine,
-  onDelete,
-  onSetDefault
+  onDelete
 }) => {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -19,21 +17,8 @@ const SearchEngineItem: React.FC<SearchEngineItemProps> = ({
     }
   };
 
-  const handleSetDefault = () => {
-    if (!engine.isDefault) {
-      onSetDefault(engine.id);
-    }
-  };
-
   return (
-    <div 
-      className={`flex items-center p-2 rounded-lg ${
-        engine.isDefault 
-          ? 'bg-blue-100 border border-blue-300' 
-          : 'bg-white border hover:bg-gray-50'
-      }`}
-      onClick={handleSetDefault}
-    >
+    <div className="flex items-center p-2 rounded-lg bg-white border hover:bg-gray-50">
       <div className="flex-shrink-0 mr-2 text-gray-400 cursor-move">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -56,11 +41,6 @@ const SearchEngineItem: React.FC<SearchEngineItemProps> = ({
         </div>
       </div>
       <div className="flex items-center flex-shrink-0">
-        {engine.isDefault && (
-          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded mr-1">
-            默认
-          </span>
-        )}
         <button
           onClick={handleDelete}
           className="text-red-500 hover:text-red-700 flex-shrink-0"

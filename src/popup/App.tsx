@@ -31,7 +31,7 @@ const App: React.FC = () => {
       <ImportExport />
 
       <div className="mt-5 pt-1 text-xs text-gray-500 text-center">
-        点击搜索引擎可设为默认，右键选中文本可使用搜索引擎搜索
+        右键选中文本可使用搜索引擎搜索，拖拽可调整顺序
       </div>
     </div>
   );

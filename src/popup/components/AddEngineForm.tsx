@@ -71,7 +71,6 @@ const AddEngineForm: React.FC = () => {
       name,
       url: searchUrl,
       icon: iconUrl,
-      isDefault: false,
       order: 999 // 新添加的引擎默认排在最后
     };
     

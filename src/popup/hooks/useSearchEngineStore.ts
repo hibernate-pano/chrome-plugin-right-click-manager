@@ -5,7 +5,6 @@ import {
   addSearchEngine as addEngineToStorage, 
   updateSearchEngine as updateEngineInStorage,
   deleteSearchEngine as deleteEngineFromStorage,
-  setDefaultEngine as setDefaultEngineInStorage,
   reorderSearchEngines as reorderEnginesInStorage
 } from '../services/storage';
 
@@ -66,19 +65,6 @@ export const useSearchEngineStore = create<SearchEngineStore>((set) => ({
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : '删除搜索引擎失败', 
-        isLoading: false 
-      });
-    }
-  },
-
-  setDefaultEngine: async (id: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      const engines = await setDefaultEngineInStorage(id);
-      set({ engines, isLoading: false });
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : '设置默认搜索引擎失败', 
         isLoading: false 
       });
     }

@@ -12,7 +12,6 @@ const defaultEngines: SearchEngine[] = [
     name: 'Google',
     url: 'https://www.google.com/search?q=%s',
     icon: 'https://www.google.com/favicon.ico',
-    isDefault: true,
     order: 0
   },
   {
@@ -20,7 +19,6 @@ const defaultEngines: SearchEngine[] = [
     name: 'Bing',
     url: 'https://www.bing.com/search?q=%s',
     icon: 'https://www.bing.com/favicon.ico',
-    isDefault: false,
     order: 1
   },
   {
@@ -28,7 +26,6 @@ const defaultEngines: SearchEngine[] = [
     name: 'Baidu',
     url: 'https://www.baidu.com/s?wd=%s',
     icon: 'https://www.baidu.com/favicon.ico',
-    isDefault: false,
     order: 2
   }
 ];
@@ -164,22 +161,6 @@ export const deleteSearchEngine = async (id: string): Promise<SearchEngine[]> =>
     return newEngines;
   } catch (error) {
     logError(error, 'deleteSearchEngine');
-    throw error;
-  }
-};
-
-// 设置默认搜索引擎
-export const setDefaultEngine = async (id: string): Promise<SearchEngine[]> => {
-  try {
-    const engines = await getSearchEngines();
-    const newEngines = engines.map((e) => ({
-      ...e,
-      isDefault: e.id === id
-    }));
-    await saveSearchEngines(newEngines);
-    return newEngines;
-  } catch (error) {
-    logError(error, 'setDefaultEngine');
     throw error;
   }
 }; 
