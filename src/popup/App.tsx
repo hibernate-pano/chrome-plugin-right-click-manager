@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { APP_NAME, APP_VERSION } from '../shared/constants';
 import AddEngineForm from './components/AddEngineForm';
 import SearchEngineList from './components/SearchEngineList';
+import ImportExport from './components/ImportExport';
 import { useSearchEngineStore } from './hooks/useSearchEngineStore';
 
 const App: React.FC = () => {
@@ -26,6 +27,8 @@ const App: React.FC = () => {
         <h2 className="text-lg font-medium mb-2">搜索引擎列表</h2>
         <SearchEngineList />
       </div>
+
+      <ImportExport />
 
       <div className="mt-5 pt-1 text-xs text-gray-500 text-center">
         点击搜索引擎可设为默认，右键选中文本可使用搜索引擎搜索

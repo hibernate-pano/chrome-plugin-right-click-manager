@@ -5,7 +5,8 @@ import {
   addSearchEngine as addEngineToStorage, 
   updateSearchEngine as updateEngineInStorage,
   deleteSearchEngine as deleteEngineFromStorage,
-  setDefaultEngine as setDefaultEngineInStorage
+  setDefaultEngine as setDefaultEngineInStorage,
+  reorderSearchEngines as reorderEnginesInStorage
 } from '../services/storage';
 
 export const useSearchEngineStore = create<SearchEngineStore>((set) => ({
@@ -78,6 +79,19 @@ export const useSearchEngineStore = create<SearchEngineStore>((set) => ({
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : '设置默认搜索引擎失败', 
+        isLoading: false 
+      });
+    }
+  },
+
+  reorderEngines: async (engineIds: string[]) => {
+    set({ isLoading: true, error: null });
+    try {
+      const engines = await reorderEnginesInStorage(engineIds);
+      set({ engines, isLoading: false });
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : '重新排序搜索引擎失败', 
         isLoading: false 
       });
     }

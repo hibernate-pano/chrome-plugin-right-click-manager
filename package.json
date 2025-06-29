@@ -11,7 +11,9 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
+    "@types/react-beautiful-dnd": "^13.1.8",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.18.0",
     "zustand": "^4.4.6"
@@ -35,4 +37,4 @@
     "typescript": "^5.2.2",
     "vite": "^4.5.0"
   }
-} 
+}

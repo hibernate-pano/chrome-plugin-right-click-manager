@@ -23,6 +23,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'src/popup/index.html'),
+        welcome: resolve(__dirname, 'src/welcome/index.html'),
       },
       output: {
         chunkFileNames: 'assets/[name]-[hash].js',

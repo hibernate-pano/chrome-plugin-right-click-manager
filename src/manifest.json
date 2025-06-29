@@ -25,5 +25,11 @@
     "16": "public/images/icon16.png",
     "48": "public/images/icon48.png",
     "128": "public/images/icon128.png"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["src/welcome/index.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 } 
