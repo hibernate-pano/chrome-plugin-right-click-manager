@@ -1,118 +1,76 @@
-import { DEFAULT_SEARCH_ENGINES, SEARCH_ENGINE_ORDER } from '@/shared/constants';
-import { SearchEngines } from '@/shared/types';
+import { SearchEngine } from '../shared/types';
 
-// 确保菜单创建的互斥性
-let menuCreationInProgress = false;
+// 创建上下文菜单
+function createContextMenus(engines: SearchEngine[]) {
+  // 清除现有菜单
+  chrome.contextMenus.removeAll();
 
-/**
- * 初始化上下文菜单
- */
-function initializeContextMenus() {
-  // 如果正在创建菜单，则跳过
-  if (menuCreationInProgress) {
-    return;
-  }
+  // 创建父菜单
+  chrome.contextMenus.create({
+    id: 'search-with',
+    title: '使用搜索引擎搜索 "%s"',
+    contexts: ['selection']
+  });
 
-  menuCreationInProgress = true;
-
-  // 清除所有现有的上下文菜单
-  chrome.contextMenus.removeAll(() => {
-    // 创建父菜单
+  // 为每个启用的搜索引擎创建子菜单
+  engines.forEach(engine => {
     chrome.contextMenus.create({
-      id: 'searchWith',
-      title: 'Search with...',
+      id: `search-${engine.id}`,
+      parentId: 'search-with',
+      title: engine.name,
       contexts: ['selection']
-    }, () => {
-      if (chrome.runtime.lastError) {
-        console.error('Error creating parent menu:', chrome.runtime.lastError);
-        menuCreationInProgress = false;
-        return;
-      }
-
-      // 从存储中获取搜索引擎配置
-      chrome.storage.sync.get(['searchEngines', 'engineOrder'], (result) => {
-        const searchEngines = (result.searchEngines as SearchEngines) || DEFAULT_SEARCH_ENGINES;
-        const order = (result.engineOrder as string[]) || SEARCH_ENGINE_ORDER;
-
-        // 按顺序创建菜单项
-        let itemsCreated = 0;
-        const totalItems = order.filter((url: string) => searchEngines[url]?.enabled).length;
-
-        order.forEach((url: string) => {
-          const engine = searchEngines[url];
-          if (engine && engine.enabled) {
-            chrome.contextMenus.create({
-              id: url,
-              title: engine.name,
-              parentId: 'searchWith',
-              contexts: ['selection']
-            }, () => {
-              if (chrome.runtime.lastError) {
-                console.error('Error creating menu item:', chrome.runtime.lastError);
-              }
-              
-              itemsCreated++;
-              if (itemsCreated === totalItems) {
-                menuCreationInProgress = false;
-              }
-            });
-          }
-        });
-
-        // 如果没有启用的搜索引擎，也要释放锁
-        if (totalItems === 0) {
-          menuCreationInProgress = false;
-        }
-      });
     });
   });
 }
 
-// 处理上下文菜单点击事件
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId !== 'searchWith' && info.selectionText) {
-    // 使用选中的文本和搜索引擎 URL 进行搜索
-    const searchUrl = (info.menuItemId as string).replace('%s', encodeURIComponent(info.selectionText));
-    
-    // 在当前页面执行脚本来打开新标签页
-    if (tab?.id) {
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: (url: string) => { window.open(url, '_blank'); },
-        args: [searchUrl]
-      });
-    }
+// 处理上下文菜单点击
+chrome.contextMenus.onClicked.addListener((info) => {
+  if (!info.menuItemId.toString().startsWith('search-') || info.menuItemId === 'search-with') {
+    return;
   }
-});
 
-// 监听来自 popup 的消息
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === 'updateContextMenus') {
-    // 等待一小段时间再更新菜单，避免频繁更新
-    setTimeout(initializeContextMenus, 100);
-  }
-});
+  const engineId = info.menuItemId.toString().replace('search-', '');
+  const selectedText = info.selectionText || '';
 
-// 扩展安装或更新时初始化
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('Extension installed/updated');
-  
-  // 初始化存储
-  chrome.storage.sync.get(['searchEngines'], (result) => {
-    console.log('Current storage:', result);
-    
-    if (!result.searchEngines) {
-      console.log('Initializing default search engines');
-      chrome.storage.sync.set({ 
-        searchEngines: DEFAULT_SEARCH_ENGINES,
-        engineOrder: SEARCH_ENGINE_ORDER
-      }, () => {
-        console.log('Storage initialized');
-        initializeContextMenus();
-      });
-    } else {
-      console.log('Using existing search engines');
-      initializeContextMenus();
+  // 获取搜索引擎列表
+  chrome.storage.sync.get('searchEngines', (result) => {
+    const engines = Array.isArray(result.searchEngines) ? result.searchEngines : [];
+    const engine = engines.find(e => e.id === engineId);
+
+    if (engine) {
+      // 构建搜索URL并打开
+      const searchUrl = engine.url.replace('%s', encodeURIComponent(selectedText));
+      chrome.tabs.create({ url: searchUrl });
     }
   });
+});
+
+// 初始化扩展
+function initializeExtension() {
+  // 获取搜索引擎列表并创建上下文菜单
+  chrome.storage.sync.get('searchEngines', (result) => {
+    const engines = Array.isArray(result.searchEngines) ? result.searchEngines : [];
+    createContextMenus(engines);
+  });
+}
+
+// 监听存储变化
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && changes.searchEngines) {
+    const engines = Array.isArray(changes.searchEngines.newValue) ? changes.searchEngines.newValue : [];
+    createContextMenus(engines);
+  }
+});
+
+// 监听安装/更新事件
+chrome.runtime.onInstalled.addListener(() => {
+  initializeExtension();
+});
+
+// 监听来自popup的消息
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === 'updateContextMenus') {
+    initializeExtension();
+  }
+  return true;
 }); 

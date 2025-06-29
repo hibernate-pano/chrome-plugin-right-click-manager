@@ -11,8 +11,6 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.4",
-    "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.18.0",
@@ -22,7 +20,6 @@
     "@crxjs/vite-plugin": "^2.0.0-beta.21",
     "@types/chrome": "^0.0.251",
     "@types/node": "^20.9.0",
-    "@types/qrcode": "^1.5.4",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^6.10.0",

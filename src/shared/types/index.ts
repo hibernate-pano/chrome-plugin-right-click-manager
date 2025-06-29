@@ -1,6 +1,9 @@
 export interface SearchEngine {
+  id: string;
   name: string;
-  enabled: boolean;
+  url: string;
+  icon: string;
+  isDefault: boolean;
 }
 
 export interface SearchEngines {
@@ -41,4 +44,15 @@ export interface SyncState {
   isSyncing: boolean;
   lastSynced: Date | null;
   syncError: string | null;
-} 
+}
+
+export type SearchEngineStore = {
+  engines: SearchEngine[];
+  isLoading: boolean;
+  error: string | null;
+  fetchEngines: () => Promise<void>;
+  addEngine: (engine: SearchEngine) => Promise<void>;
+  updateEngine: (engine: SearchEngine) => Promise<void>;
+  deleteEngine: (id: string) => Promise<void>;
+  setDefaultEngine: (id: string) => Promise<void>;
+}; 

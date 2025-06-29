@@ -1,133 +1,85 @@
 import { create } from 'zustand';
-import { SearchEngineState, User } from '@/shared/types';
-import * as storageService from '../services/storage';
-import * as supabaseService from '../services/supabase';
-import { mergeConfigurations } from '@/shared/utils';
+import { SearchEngine, SearchEngineStore } from '../../shared/types';
+import { 
+  getSearchEngines, 
+  addSearchEngine as addEngineToStorage, 
+  updateSearchEngine as updateEngineInStorage,
+  deleteSearchEngine as deleteEngineFromStorage,
+  setDefaultEngine as setDefaultEngineInStorage
+} from '../services/storage';
 
-interface SearchEngineStore extends SearchEngineState {
-  initializeEngines: () => Promise<void>;
-  syncWithCloud: (user: User) => Promise<boolean>;
-  addEngine: (url: string, name: string) => Promise<void>;
-  deleteEngine: (url: string) => Promise<void>;
-  toggleEngine: (url: string, enabled: boolean) => Promise<void>;
-  updateOrder: (newOrder: string[]) => Promise<void>;
-  clearError: () => void;
-}
-
-export const useSearchEngineStore = create<SearchEngineStore>((set, get) => ({
-  searchEngines: {},
-  engineOrder: [],
+export const useSearchEngineStore = create<SearchEngineStore>((set) => ({
+  engines: [],
   isLoading: false,
   error: null,
-  
-  initializeEngines: async () => {
-    set({ isLoading: true });
-    try {
-      const { searchEngines, engineOrder } = await storageService.getSearchEngines();
-      set({ searchEngines, engineOrder, isLoading: false });
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
-    }
-  },
-  
-  syncWithCloud: async (user) => {
+
+  fetchEngines: async () => {
     set({ isLoading: true, error: null });
     try {
-      // 获取本地配置
-      const localConfig = await storageService.getAllConfig();
-      
-      // 获取云端配置
-      const remoteConfig = await supabaseService.getUserConfig();
-      
-      // 合并配置
-      const mergedConfig = mergeConfigurations(localConfig, remoteConfig || {});
-      
-      // 保存到本地
-      await storageService.saveFullConfig(mergedConfig);
-      
-      // 保存到云端
-      await supabaseService.saveUserConfig(user.id, mergedConfig);
-      
-      // 更新状态
-      set({
-        searchEngines: mergedConfig.searchEngines,
-        engineOrder: mergedConfig.engineOrder,
-        isLoading: false,
+      const engines = await getSearchEngines();
+      set({ engines, isLoading: false });
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : '获取搜索引擎失败', 
+        isLoading: false 
       });
-      
-      return true;
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
-      return false;
     }
   },
-  
-  addEngine: async (url, name) => {
+
+  addEngine: async (engine: SearchEngine) => {
     set({ isLoading: true, error: null });
     try {
-      await storageService.addSearchEngine(url, name);
-      
-      // 重新加载搜索引擎列表
-      const { searchEngines, engineOrder } = await storageService.getSearchEngines();
-      set({ searchEngines, engineOrder, isLoading: false });
-      
-      // 通知后台更新上下文菜单
-      chrome.runtime.sendMessage({ type: 'updateContextMenus' });
+      // 生成唯一ID
+      const newEngine = {
+        ...engine,
+        id: Date.now().toString()
+      };
+      const engines = await addEngineToStorage(newEngine);
+      set({ engines, isLoading: false });
     } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      set({ 
+        error: error instanceof Error ? error.message : '添加搜索引擎失败', 
+        isLoading: false 
+      });
     }
   },
-  
-  deleteEngine: async (url) => {
+
+  updateEngine: async (engine: SearchEngine) => {
     set({ isLoading: true, error: null });
     try {
-      await storageService.deleteSearchEngine(url);
-      
-      // 重新加载搜索引擎列表
-      const { searchEngines, engineOrder } = await storageService.getSearchEngines();
-      set({ searchEngines, engineOrder, isLoading: false });
-      
-      // 通知后台更新上下文菜单
-      chrome.runtime.sendMessage({ type: 'updateContextMenus' });
+      const engines = await updateEngineInStorage(engine);
+      set({ engines, isLoading: false });
     } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      set({ 
+        error: error instanceof Error ? error.message : '更新搜索引擎失败', 
+        isLoading: false 
+      });
     }
   },
-  
-  toggleEngine: async (url, enabled) => {
+
+  deleteEngine: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      await storageService.updateSearchEngineStatus(url, enabled);
-      
-      // 更新本地状态
-      const { searchEngines } = get();
-      const updatedEngines = { ...searchEngines };
-      if (updatedEngines[url]) {
-        updatedEngines[url].enabled = enabled;
-      }
-      set({ searchEngines: updatedEngines, isLoading: false });
-      
-      // 通知后台更新上下文菜单
-      chrome.runtime.sendMessage({ type: 'updateContextMenus' });
+      const engines = await deleteEngineFromStorage(id);
+      set({ engines, isLoading: false });
     } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      set({ 
+        error: error instanceof Error ? error.message : '删除搜索引擎失败', 
+        isLoading: false 
+      });
     }
   },
-  
-  updateOrder: async (newOrder) => {
+
+  setDefaultEngine: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      await storageService.updateEngineOrder(newOrder);
-      set({ engineOrder: newOrder, isLoading: false });
-      
-      // 通知后台更新上下文菜单
-      chrome.runtime.sendMessage({ type: 'updateContextMenus' });
+      const engines = await setDefaultEngineInStorage(id);
+      set({ engines, isLoading: false });
     } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+      set({ 
+        error: error instanceof Error ? error.message : '设置默认搜索引擎失败', 
+        isLoading: false 
+      });
     }
-  },
-  
-  clearError: () => {
-    set({ error: null });
-  },
+  }
 })); 

@@ -1,89 +1,114 @@
 import React, { useState } from 'react';
+import { useSearchEngineStore } from '../hooks/useSearchEngineStore';
+import { SearchEngine } from '../../shared/types';
 
-interface AddEngineFormProps {
-  onAdd: (url: string, name: string) => void;
-  onCancel: () => void;
-}
-
-const AddEngineForm: React.FC<AddEngineFormProps> = ({ onAdd, onCancel }) => {
+const AddEngineForm: React.FC = () => {
+  const { addEngine, error } = useSearchEngineStore();
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [icon, setIcon] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 验证输入
-    if (!name.trim()) {
-      setError('请输入搜索引擎名称');
+    if (!name || !url) {
       return;
     }
     
-    if (!url.trim()) {
-      setError('请输入搜索URL');
-      return;
+    // 确保URL包含%s
+    let searchUrl = url;
+    if (!searchUrl.includes('%s')) {
+      searchUrl += '%s';
     }
     
-    // 确保URL包含%s占位符
-    if (!url.includes('%s')) {
-      setError('URL必须包含%s作为搜索词占位符');
-      return;
+    // 如果没有提供图标，尝试使用网站favicon
+    let iconUrl = icon;
+    if (!iconUrl) {
+      try {
+        const urlObj = new URL(searchUrl);
+        iconUrl = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}`;
+      } catch (error) {
+        iconUrl = '';
+      }
     }
     
-    // 提交
-    onAdd(url, name);
+    setIsSubmitting(true);
+    
+    const newEngine: SearchEngine = {
+      id: Date.now().toString(),
+      name,
+      url: searchUrl,
+      icon: iconUrl,
+      isDefault: false
+    };
+    
+    await addEngine(newEngine);
     
     // 重置表单
     setName('');
     setUrl('');
-    setError(null);
+    setIcon('');
+    setIsSubmitting(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 border border-border rounded-md p-3 mb-3 space-y-3">
-      <div className="space-y-1">
-        <label htmlFor="engineName" className="block text-xs text-disabled font-medium">
-          搜索引擎名称
+    <form onSubmit={handleSubmit} className="space-y-3 p-3 bg-gray-50 rounded-lg">
+      <h3 className="font-medium mb-2">添加新搜索引擎</h3>
+      
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          名称
         </label>
         <input
           type="text"
-          id="engineName"
+          id="name"
           value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="例如：Google"
-          className="w-full p-2 text-sm border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+          onChange={(e) => setName(e.target.value)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="Google"
+          required
         />
       </div>
       
-      <div className="space-y-1">
-        <label htmlFor="engineUrl" className="block text-xs text-disabled font-medium">
-          搜索URL（使用%s作为搜索词占位符）
+      <div>
+        <label htmlFor="url" className="block text-sm font-medium text-gray-700">
+          搜索URL (使用 %s 作为搜索词占位符)
         </label>
         <input
           type="text"
-          id="engineUrl"
+          id="url"
           value={url}
-          onChange={e => setUrl(e.target.value)}
-          placeholder="例如：https://www.google.com/search?q=%s"
-          className="w-full p-2 text-sm border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+          onChange={(e) => setUrl(e.target.value)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="https://www.google.com/search?q=%s"
+          required
         />
       </div>
       
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      <div>
+        <label htmlFor="icon" className="block text-sm font-medium text-gray-700">
+          图标URL (可选)
+        </label>
+        <input
+          type="text"
+          id="icon"
+          value={icon}
+          onChange={(e) => setIcon(e.target.value)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="https://www.google.com/favicon.ico"
+        />
+      </div>
       
-      <div className="flex justify-end space-x-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-3 py-1.5 text-sm bg-transparent text-primary hover:bg-background-hover rounded-md"
-        >
-          取消
-        </button>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      
+      <div>
         <button
           type="submit"
-          className="px-3 py-1.5 text-sm bg-primary text-white hover:bg-primary-hover rounded-md"
+          disabled={isSubmitting || !name || !url}
+          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
         >
-          添加
+          {isSubmitting ? '添加中...' : '添加搜索引擎'}
         </button>
       </div>
     </form>

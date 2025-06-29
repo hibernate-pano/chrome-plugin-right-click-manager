@@ -1,62 +1,71 @@
 import React from 'react';
-import { SearchEngine } from '@/shared/types';
+import { SearchEngine } from '../../shared/types';
 
 interface SearchEngineItemProps {
-  url: string;
   engine: SearchEngine;
-  onToggle: (url: string, enabled: boolean) => void;
-  onDelete: (url: string) => void;
+  onDelete: (id: string) => void;
+  onSetDefault: (id: string) => void;
 }
 
 const SearchEngineItem: React.FC<SearchEngineItemProps> = ({
-  url,
   engine,
-  onToggle,
   onDelete,
+  onSetDefault
 }) => {
-  const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onToggle(url, e.target.checked);
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm(`确定要删除 ${engine.name} 吗？`)) {
+      onDelete(engine.id);
+    }
   };
 
-  const handleDelete = () => {
-    if (window.confirm(`确定要删除 ${engine.name} 吗？`)) {
-      onDelete(url);
+  const handleSetDefault = () => {
+    if (!engine.isDefault) {
+      onSetDefault(engine.id);
     }
   };
 
   return (
-    <div className="flex items-center justify-between p-2 hover:bg-background-hover rounded-md transition-all">
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          checked={engine.enabled}
-          onChange={handleToggle}
-          className="w-4 h-4 border-border rounded focus:ring-primary mr-2"
+    <div 
+      className={`flex items-center p-2 rounded-lg ${
+        engine.isDefault 
+          ? 'bg-blue-100 border border-blue-300' 
+          : 'bg-white border hover:bg-gray-50'
+      }`}
+      onClick={handleSetDefault}
+    >
+      <div className="flex-shrink-0 mr-3">
+        <img 
+          src={engine.icon} 
+          alt={`${engine.name} icon`} 
+          className="w-6 h-6"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'https://www.google.com/s2/favicons?domain=' + new URL(engine.url).hostname;
+          }}
         />
-        <label className="text-sm cursor-pointer select-none">{engine.name}</label>
       </div>
-      <div className="flex items-center">
-        <button
-          onClick={handleDelete}
-          className="text-xs text-gray-500 hover:text-red-500 p-1"
-          title="删除"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
-          </svg>
-        </button>
+      <div className="flex-grow">
+        <div className="font-medium">{engine.name}</div>
+        <div className="text-xs text-gray-500 truncate" title={engine.url}>
+          {engine.url}
+        </div>
       </div>
+      <div className="flex-shrink-0 ml-2">
+        {engine.isDefault && (
+          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">
+            默认
+          </span>
+        )}
+      </div>
+      <button
+        onClick={handleDelete}
+        className="ml-2 text-red-500 hover:text-red-700"
+        title="删除"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </button>
     </div>
   );
 };
