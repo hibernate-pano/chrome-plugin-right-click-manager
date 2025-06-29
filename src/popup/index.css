@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 body {
-  width: 320px;
   margin: 0;
   font-family: 'Segoe UI', 'SF Pro Display', 'Helvetica Neue', sans-serif;
   @apply text-text bg-surface;

@@ -53,8 +53,8 @@ const AddEngineForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 p-3 bg-gray-50 rounded-lg">
-      <h3 className="font-medium mb-2">添加新搜索引擎</h3>
+    <form onSubmit={handleSubmit} className="space-y-2 p-3 bg-gray-50 rounded-lg">
+      <h3 className="font-medium mb-1">添加新搜索引擎</h3>
       
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">

@@ -30,7 +30,7 @@ const SearchEngineList: React.FC = () => {
   }
 
   return (
-    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+    <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
       {engines.map((engine) => (
         <SearchEngineItem
           key={engine.id}

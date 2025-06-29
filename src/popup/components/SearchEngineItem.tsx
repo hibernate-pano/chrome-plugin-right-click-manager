@@ -34,38 +34,38 @@ const SearchEngineItem: React.FC<SearchEngineItemProps> = ({
       }`}
       onClick={handleSetDefault}
     >
-      <div className="flex-shrink-0 mr-3">
+      <div className="flex-shrink-0 mr-2">
         <img 
           src={engine.icon} 
           alt={`${engine.name} icon`} 
-          className="w-6 h-6"
+          className="w-5 h-5"
           onError={(e) => {
             (e.target as HTMLImageElement).src = 'https://www.google.com/s2/favicons?domain=' + new URL(engine.url).hostname;
           }}
         />
       </div>
-      <div className="flex-grow">
+      <div className="flex-grow min-w-0 mr-2">
         <div className="font-medium">{engine.name}</div>
-        <div className="text-xs text-gray-500 truncate" title={engine.url}>
+        <div className="text-xs text-gray-500 truncate w-full" title={engine.url}>
           {engine.url}
         </div>
       </div>
-      <div className="flex-shrink-0 ml-2">
+      <div className="flex items-center flex-shrink-0">
         {engine.isDefault && (
-          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">
+          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded mr-1">
             默认
           </span>
         )}
+        <button
+          onClick={handleDelete}
+          className="text-red-500 hover:text-red-700 flex-shrink-0"
+          title="删除"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
       </div>
-      <button
-        onClick={handleDelete}
-        className="ml-2 text-red-500 hover:text-red-700"
-        title="删除"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>
-      </button>
     </div>
   );
 };
