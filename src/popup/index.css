@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  width: 320px;
+  margin: 0;
+  font-family: 'Segoe UI', 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  @apply text-text bg-surface;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-disabled;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.notification {
+  @apply fixed top-2 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md text-sm shadow-md z-50;
+  animation: fadeIn 0.2s ease-out, fadeOut 0.2s ease-in forwards 2.5s;
+}
+
+.notification-info {
+  @apply bg-primary text-white;
+}
+
+.notification-success {
+  @apply bg-green-500 text-white;
+}
+
+.notification-error {
+  @apply bg-red-500 text-white;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+} 

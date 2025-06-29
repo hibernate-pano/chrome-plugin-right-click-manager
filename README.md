@@ -10,15 +10,46 @@
 - 🔄 云端配置同步
 - 👤 支持用户账户系统
 - 📱 微信扫码登录
-- 📧 邮箱验证码登录
+- �� 邮箱验证码登录
 
 ## 安装说明
 
-1. 下载项目代码
-2. 在 Chrome 浏览器中打开 `chrome://extensions/`
-3. 开启右上角的"开发者模式"
-4. 点击"加载已解压的扩展程序"
-5. 选择项目文件夹
+### 从源码安装
+
+1. 克隆项目代码
+   ```
+   git clone https://github.com/yourusername/chrome-plugin-right-click-manager.git
+   cd chrome-plugin-right-click-manager
+   ```
+
+2. 安装依赖
+   ```
+   npm install
+   ```
+
+3. 构建项目
+   ```
+   npm run build
+   ```
+
+4. 在Chrome浏览器中加载扩展
+   - 打开 `chrome://extensions/`
+   - 开启右上角的"开发者模式"
+   - 点击"加载已解压的扩展程序"
+   - 选择项目中的 `dist` 文件夹
+
+### 开发模式
+
+1. 启动开发服务器
+   ```
+   npm run dev
+   ```
+
+2. 在Chrome浏览器中加载扩展
+   - 打开 `chrome://extensions/`
+   - 开启右上角的"开发者模式"
+   - 点击"加载已解压的扩展程序"
+   - 选择项目中的 `dist` 文件夹
 
 ## 使用方法
 
@@ -41,7 +72,9 @@
 
 ## 技术架构
 
-- 前端：原生 JavaScript
+- 前端：React + TypeScript + Tailwind CSS
+- 构建工具：Vite + CRXJS
+- 状态管理：Zustand
 - 存储：Chrome Storage API
 - 后端：Supabase
 - 认证：邮箱验证码 + 微信扫码登录
@@ -51,8 +84,12 @@
 插件预置了多个常用搜索引擎，包括：
 
 - Google
-- Bing
 - Baidu
+- DuckDuckGo
+- Bing
+- Perplexity
+- ChatGPT
+- Claude AI
 - 等其他搜索引擎
 
 用户可以根据需要自行添加、删除或修改搜索引擎。
@@ -69,26 +106,24 @@
 - 仅在用户主动登录后同步配置数据
 - 所有数据传输采用安全加密方式
 
-## 开发说明
-
-### 项目结构
+## 项目结构
 
 ```
-├── manifest.json      # 插件配置文件
-├── popup.html        # 弹出窗口 HTML
-├── popup.js         # 弹出窗口逻辑
-├── background.js    # 后台服务
-├── config.js        # 配置文件
-├── styles.css       # 样式文件
-└── images/          # 图标资源
+├── public/              # 静态资源
+│   └── images/          # 图标资源
+├── src/                 # 源代码
+│   ├── background/      # 后台服务
+│   │   └── index.ts    # 后台服务入口
+│   ├── popup/           # 弹出窗口
+│   │   ├── components/  # UI组件
+│   │   ├── hooks/       # 自定义Hooks
+│   │   └── services/    # API服务
+│   └── shared/          # 共享代码
+│       └── types/       # 类型定义
+├── .env                 # 环境变量
+├── manifest.json        # 插件配置
+└── package.json         # 项目依赖
 ```
-
-### 主要文件说明
-
-- `manifest.json`: 定义插件的基本信息和权限
-- `popup.js`: 实现弹出窗口的用户界面和交互逻辑
-- `background.js`: 处理右键菜单和搜索功能
-- `config.js`: 存储默认配置和常量
 
 ## 贡献指南
 
@@ -100,13 +135,21 @@ MIT License
 
 ## 更新日志
 
-### v1.1
+### v2.0.0
+
+- 使用React + TypeScript重构整个项目
+- 采用Vite作为构建工具
+- 使用Tailwind CSS优化UI
+- 引入Zustand进行状态管理
+- 改进错误处理和用户体验
+
+### v1.1.0
 
 - 添加用户账户系统
 - 支持配置云端同步
 - 新增微信登录功能
 
-### v1.0
+### v1.0.0
 
 - 初始版本发布
 - 支持基本的右键搜索功能

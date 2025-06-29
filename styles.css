@@ -362,3 +362,50 @@ button:focus-visible {
     background-color: var(--primary-color);
     color: white;
 }
+
+/* 同步状态提示样式 */
+.sync-status {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.sync-status.info {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.sync-status.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.sync-status.error {
+    background-color: #fdecea;
+    color: #d32f2f;
+    border: 1px solid #ffcdd2;
+}
+
+.sync-status.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 二维码加载动画 */
+@keyframes qrLoading {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
+#qrcode.loading {
+    animation: qrLoading 1.5s infinite;
+}
