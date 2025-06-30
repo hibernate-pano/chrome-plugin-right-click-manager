@@ -1,6 +1,6 @@
 {
   "name": "right-click-searcher",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Search selected text with various search engines",
   "type": "module",
   "scripts": {
