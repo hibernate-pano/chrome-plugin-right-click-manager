@@ -1,16 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { APP_NAME, APP_VERSION } from '../shared/constants';
 import AddEngineForm from './components/AddEngineForm';
 import SearchEngineList from './components/SearchEngineList';
 import ImportExport from './components/ImportExport';
 import { useSearchEngineStore } from './hooks/useSearchEngineStore';
+import { SearchEngine } from '../shared/types';
 
 const App: React.FC = () => {
   const { fetchEngines } = useSearchEngineStore();
+  const [engineToEdit, setEngineToEdit] = useState<SearchEngine | undefined>(undefined);
 
   useEffect(() => {
     fetchEngines();
   }, [fetchEngines]);
+
+  const handleEditEngine = (engine: SearchEngine) => {
+    setEngineToEdit(engine);
+  };
+
+  const handleCancelEdit = () => {
+    setEngineToEdit(undefined);
+  };
 
   return (
     <div className="w-[550px] p-4 pb-6 overflow-y-auto">
@@ -20,12 +30,15 @@ const App: React.FC = () => {
       </div>
 
       <div className="mb-3">
-        <AddEngineForm />
+        <AddEngineForm 
+          engineToEdit={engineToEdit}
+          onCancelEdit={handleCancelEdit}
+        />
       </div>
 
       <div>
         <h2 className="text-lg font-medium mb-2">搜索引擎列表</h2>
-        <SearchEngineList />
+        <SearchEngineList onEdit={handleEditEngine} />
       </div>
 
       <ImportExport />

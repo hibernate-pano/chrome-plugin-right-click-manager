@@ -2,13 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { useSearchEngineStore } from '../hooks/useSearchEngineStore';
 import { SearchEngine } from '../../shared/types';
 
-const AddEngineForm: React.FC = () => {
-  const { addEngine, error } = useSearchEngineStore();
+interface AddEngineFormProps {
+  engineToEdit?: SearchEngine;
+  onCancelEdit?: () => void;
+}
+
+const AddEngineForm: React.FC<AddEngineFormProps> = ({ engineToEdit, onCancelEdit }) => {
+  const { addEngine, updateEngine, error } = useSearchEngineStore();
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [icon, setIcon] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [iconPreview, setIconPreview] = useState<string | null>(null);
+
+  // 当 engineToEdit 变化时，更新表单字段
+  useEffect(() => {
+    if (engineToEdit) {
+      setName(engineToEdit.name);
+      setUrl(engineToEdit.url);
+      setIcon(engineToEdit.icon);
+    } else {
+      // 如果不是编辑模式，重置表单
+      setName('');
+      setUrl('');
+      setIcon('');
+      setIconPreview(null);
+    }
+  }, [engineToEdit]);
 
   // 当URL或图标URL变化时，更新图标预览
   useEffect(() => {
@@ -48,6 +68,12 @@ const AddEngineForm: React.FC = () => {
     }
   };
 
+  const handleCancel = () => {
+    if (onCancelEdit) {
+      onCancelEdit();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -66,27 +92,50 @@ const AddEngineForm: React.FC = () => {
     
     setIsSubmitting(true);
     
-    const newEngine: SearchEngine = {
-      id: Date.now().toString(),
-      name,
-      url: searchUrl,
-      icon: iconUrl,
-      order: 999 // 新添加的引擎默认排在最后
-    };
+    if (engineToEdit) {
+      // 编辑模式
+      const updatedEngine: SearchEngine = {
+        ...engineToEdit,
+        name,
+        url: searchUrl,
+        icon: iconUrl
+      };
+      
+      await updateEngine(updatedEngine);
+      
+      // 编辑完成后，取消编辑模式
+      if (onCancelEdit) {
+        onCancelEdit();
+      }
+    } else {
+      // 添加模式
+      const newEngine: SearchEngine = {
+        id: Date.now().toString(),
+        name,
+        url: searchUrl,
+        icon: iconUrl,
+        order: 999 // 新添加的引擎默认排在最后
+      };
+      
+      await addEngine(newEngine);
+      
+      // 重置表单
+      setName('');
+      setUrl('');
+      setIcon('');
+      setIconPreview(null);
+    }
     
-    await addEngine(newEngine);
-    
-    // 重置表单
-    setName('');
-    setUrl('');
-    setIcon('');
-    setIconPreview(null);
     setIsSubmitting(false);
   };
 
+  const isEditMode = !!engineToEdit;
+  const formTitle = isEditMode ? "编辑搜索引擎" : "添加新搜索引擎";
+  const submitButtonText = isEditMode ? "保存更改" : "添加搜索引擎";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-2 p-3 bg-gray-50 rounded-lg">
-      <h3 className="font-medium mb-1">添加新搜索引擎</h3>
+      <h3 className="font-medium mb-1">{formTitle}</h3>
       
       <div className="flex items-start space-x-3">
         <div className="flex-grow space-y-2">
@@ -161,13 +210,22 @@ const AddEngineForm: React.FC = () => {
       
       {error && <p className="text-red-500 text-sm">{error}</p>}
       
-      <div>
+      <div className="flex space-x-2">
+        {isEditMode && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="w-1/2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            取消
+          </button>
+        )}
         <button
           type="submit"
           disabled={isSubmitting || !name || !url}
-          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
+          className={`${isEditMode ? 'w-1/2' : 'w-full'} py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300`}
         >
-          {isSubmitting ? '添加中...' : '添加搜索引擎'}
+          {isSubmitting ? (isEditMode ? '保存中...' : '添加中...') : submitButtonText}
         </button>
       </div>
     </form>

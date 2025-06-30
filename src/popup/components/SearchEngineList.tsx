@@ -2,8 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { useSearchEngineStore } from '../hooks/useSearchEngineStore';
 import SearchEngineItem from './SearchEngineItem';
+import { SearchEngine } from '../../shared/types';
 
-const SearchEngineList: React.FC = () => {
+interface SearchEngineListProps {
+  onEdit: (engine: SearchEngine) => void;
+}
+
+const SearchEngineList: React.FC<SearchEngineListProps> = ({ onEdit }) => {
   const { engines, isLoading, error, fetchEngines, deleteEngine, reorderEngines } = useSearchEngineStore();
   const [enginesList, setEnginesList] = useState(engines);
 
@@ -71,6 +76,7 @@ const SearchEngineList: React.FC = () => {
                     <SearchEngineItem
                       engine={engine}
                       onDelete={handleDelete}
+                      onEdit={onEdit}
                     />
                   </div>
                 )}
