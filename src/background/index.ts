@@ -1,4 +1,5 @@
 import { SearchEngine } from '../shared/types';
+import { defaultEngines } from '../shared/defaultEngines';
 
 // 记录错误日志
 function logError(error: unknown, context: string) {
@@ -75,8 +76,25 @@ function initializeExtension() {
     // 获取搜索引擎列表并创建上下文菜单
     chrome.storage.sync.get('searchEngines', (result) => {
       try {
-        const engines = Array.isArray(result.searchEngines) ? result.searchEngines : [];
-        createContextMenus(engines);
+        if (chrome.runtime.lastError) {
+          logError(chrome.runtime.lastError, 'initializeExtension');
+          return;
+        }
+
+        // 检查是否有搜索引擎数据
+        if (result.searchEngines && Array.isArray(result.searchEngines) && result.searchEngines.length > 0) {
+          // 如果有，直接使用
+          createContextMenus(result.searchEngines);
+        } else {
+          // 如果没有，设置默认搜索引擎并创建菜单
+          chrome.storage.sync.set({ searchEngines: defaultEngines }, () => {
+            if (chrome.runtime.lastError) {
+              logError(chrome.runtime.lastError, 'initializeExtension - setting defaults');
+              return;
+            }
+            createContextMenus(defaultEngines);
+          });
+        }
       } catch (error) {
         logError(error, 'initializeExtension storage callback');
       }
